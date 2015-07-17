@@ -6,15 +6,17 @@ import javax.realtime.PriorityParameters;
 import javax.realtime.RealtimeThread;
 
 
-public class ConnexionDrone extends RealtimeThread{
+public class RecupRelevesDrone extends RealtimeThread{
 	/**
 	 * 
 	{
-		je crée mon serverSocket sur un port donnée
-		tant que infini
-			J’écoute dans l’attente de connexions
-			à la connexion d’un drone je crée un Thread 2 dédiée
-		fin
+		tant que socket ouvert
+			je lis dans la socket
+			j’identifie la nature du message (block try catch)
+			Si relevé
+				j’affecte le relevé à l’objet RMI Mission (List<Relevés>)
+				je sauvegarde
+			fi
 	}
 	 */
 	
@@ -22,7 +24,7 @@ public class ConnexionDrone extends RealtimeThread{
 	
 	
 	
-	public ConnexionDrone(PriorityParameters priorityParameters,PeriodicParameters periodicParameters){
+	public RecupRelevesDrone(PriorityParameters priorityParameters,PeriodicParameters periodicParameters){
 		super(priorityParameters,periodicParameters);
 	}
 	
