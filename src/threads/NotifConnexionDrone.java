@@ -1,3 +1,4 @@
+package threads;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -6,23 +7,24 @@ import javax.realtime.PriorityParameters;
 import javax.realtime.RealtimeThread;
 
 
-public class GestionConnexionDrone extends RealtimeThread{
+public class NotifConnexionDrone extends RealtimeThread{
 	/**
 	 * 
-	{
-		Je récupère les streams IN et OUT depuis le socket
-		on lit dans la socket IN pour recevoir message d’identification du drone
-		on lance dans un nouveau Thread (3) pour signaler la connection du drône au serveur données (param outPutStream)
-		Crée Thread pour écouter données du drones (Thread 4)
-		fini
-	}
+		{
+			on crée un objet Drone en RMI
+			sauvegarde du drone
+			puis boucle pour récupérer mission du drône
+				sleep
+			On envoi la mission au drône
+			fin
+		}
 	 */
 	
 	
 	
 	
 	
-	public GestionConnexionDrone(PriorityParameters priorityParameters,PeriodicParameters periodicParameters){
+	public NotifConnexionDrone(PriorityParameters priorityParameters,PeriodicParameters periodicParameters){
 		super(priorityParameters,periodicParameters);
 	}
 	
