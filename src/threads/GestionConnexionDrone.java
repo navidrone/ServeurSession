@@ -64,7 +64,6 @@ public class GestionConnexionDrone extends RealtimeThread{
             //Récupération 
             NotifConnexionDrone notifConnexionDrone = new NotifConnexionDrone(priorityParameters, periodicParameters);
             notifConnexionDrone.start();
-            
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
