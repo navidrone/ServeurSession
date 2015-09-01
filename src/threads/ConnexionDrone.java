@@ -24,7 +24,8 @@ import javax.realtime.RelativeTime;
 public class ConnexionDrone extends RealtimeThread{
 
 	private Map<Integer,Socket> clients;
-	
+	private boolean termine;
+
 	public ConnexionDrone(PriorityParameters priorityParameters,PeriodicParameters periodicParameters){
 		super(priorityParameters,periodicParameters);
 	}
@@ -42,6 +43,9 @@ public class ConnexionDrone extends RealtimeThread{
 		try {
 			server = new ServerSocket(5432);
 		    for (;;) {//On écoute indéfiniment la connexion de drones
+		    	if(termine){//Si application terminé, on sort de la boucle
+		    		break;
+		    	}
 		    	System.out.println("Serveur Session demarré, en attente de connexions");
 		    	Socket client = server.accept();
 		    	//Un fois que le drone s'est connecté, on crée un Thread propre pour le gérer
@@ -62,6 +66,12 @@ public class ConnexionDrone extends RealtimeThread{
 	public void setClients(Map<Integer, Socket> clients) {
 		this.clients = clients;
 	}
-	
-	
+
+	public boolean isTermine() {
+		return termine;
+	}
+
+	public void setTermine(boolean termine) {
+		this.termine = termine;
+	}	
 }

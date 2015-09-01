@@ -69,4 +69,12 @@ public class GestionConnexionDrone extends RealtimeThread{
 			e.printStackTrace();
 		}
 	}
+	
+	public boolean isTermine() {
+		return termine;
+	}
+
+	public void setTermine(boolean termine) {
+		this.termine = termine;
+	}
 }
