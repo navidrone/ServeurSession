@@ -1,3 +1,4 @@
+package threads;
 import javax.realtime.PeriodicParameters;
 import javax.realtime.PriorityParameters;
 import javax.realtime.PriorityScheduler;
@@ -5,10 +6,11 @@ import javax.realtime.RealtimeThread;
 import javax.realtime.RelativeTime;
 
 import swing.FenetreBase;
-import threads.ConnexionDrone;
 
 
 public class ServeurSession {
+	private static FenetreBase ui;
+	private static ConnexionDrone connexionDrone;
 	
 	public static void main(String[] args)
 	{
@@ -27,9 +29,26 @@ public class ServeurSession {
 				}
 			}
 		};
-		FenetreBase fenetre = new FenetreBase();
-		fenetre.setVisible(true);//On la rend visible
-		ConnexionDrone connexionDrone = new ConnexionDrone(priorityParameters,periodicParameters);
+		connexionDrone = new ConnexionDrone(priorityParameters,periodicParameters);
+		ui = new FenetreBase();
 		connexionDrone.start();
-	}	
+		ui.setVisible(true);
+	}
+
+	public FenetreBase getUi() {
+		return ui;
+	}
+
+	public void setUi(FenetreBase ui) {
+		ServeurSession.ui = ui;
+	}
+
+	public ConnexionDrone getConnexionDrone() {
+		return connexionDrone;
+	}
+
+	public void setConnexionDrone(ConnexionDrone connexionDrone) {
+		ServeurSession.connexionDrone = connexionDrone;
+	}
+	
 }

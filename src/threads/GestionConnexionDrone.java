@@ -1,9 +1,11 @@
 package threads;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Map;
 
@@ -13,6 +15,7 @@ import javax.realtime.PriorityScheduler;
 import javax.realtime.RealtimeThread;
 import javax.realtime.RelativeTime;
 
+import bean.Drone;
 import bean.MessageDrone;
 
 import com.google.gson.Gson;
@@ -33,15 +36,18 @@ public class GestionConnexionDrone extends RealtimeThread{
 	
 	
 	
-	private Socket client;
+	private Drone drone;
 	private OutputStream os;
+	private InputStream is;
 	private ConnexionDrone connexionDrone;
+	private Gson gson;
 
 	public GestionConnexionDrone(PriorityParameters priorityParameters,PeriodicParameters periodicParameters, 
-			Socket client, ConnexionDrone connexionDrone){
+			Drone drone, ConnexionDrone connexionDrone){
 		super(priorityParameters,periodicParameters);
-		this.client=client;
+		this.drone=drone;
 		this.connexionDrone=connexionDrone;
+		gson = new GsonBuilder().create();
 	}
 	
 	public void run(){
@@ -52,29 +58,34 @@ public class GestionConnexionDrone extends RealtimeThread{
 			/* period: 200ms */
 			RelativeTime period = new RelativeTime(200 /* ms */, 0 /* ns */);
 			PeriodicParameters periodicParameters = new PeriodicParameters(null,period, null,null,null,null);
-			InputStream is = client.getInputStream();
-			os = client.getOutputStream();
+			InputStream is = drone.getSocket().getInputStream();
+			os = drone.getSocket().getOutputStream();
+			is = drone.getSocket().getInputStream();
 			//On commence par lire le message d'identification du drone
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 			String messageDrone = br.readLine();
-			Gson gson = new GsonBuilder().create();
             MessageDrone message = gson.fromJson(messageDrone, MessageDrone.class);
             //Enregistrement du client
-            connexionDrone.getClients().put(message.getValeur(), client);
-            //Récupération 
-            NotifConnexionDrone notifConnexionDrone = new NotifConnexionDrone(priorityParameters, periodicParameters);
-            notifConnexionDrone.start();
+            drone.setId(message.getValeur());
+            while (true) {
+                if (is.available() != 0) {
+                    BufferedReader input = new BufferedReader(new InputStreamReader(is));
+                    message = gson.fromJson(input.readLine(), MessageDrone.class);
+                    drone.traiterMessage(message);
+                }
+            }
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	public boolean isTermine() {
-		return termine;
-	}
-
-	public void setTermine(boolean termine) {
-		this.termine = termine;
+	public void envoyerCommande(MessageDrone messageDrone){
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os));
+	    try {
+			writer.write(gson.toJson(messageDrone));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
