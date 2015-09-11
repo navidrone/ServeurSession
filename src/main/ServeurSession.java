@@ -1,11 +1,16 @@
-package threads;
+package main;
+import java.awt.BorderLayout;
+
 import javax.realtime.PeriodicParameters;
 import javax.realtime.PriorityParameters;
 import javax.realtime.PriorityScheduler;
 import javax.realtime.RealtimeThread;
 import javax.realtime.RelativeTime;
+import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 import swing.FenetreBase;
+import threads.ConnexionDrone;
 
 
 public class ServeurSession {

@@ -1,5 +1,6 @@
 package swing;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -22,14 +23,20 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import main.ServeurSession;
+
+import com.teamdev.jxbrowser.chromium.Browser;
+import com.teamdev.jxbrowser.chromium.BrowserContext;
+import com.teamdev.jxbrowser.chromium.swing.BrowserView;
+
 import bean.Drone;
 import threads.ConnexionDrone;
-import threads.ServeurSession;
 
 public class FenetreBase extends JFrame{
 	private JTable table;
-	TabDrones modele;
+	private TabDrones modele;
 	private ServeurSession serveurSession;
+	private Browser browser;
 	
 	public FenetreBase(){
 		super();
@@ -48,7 +55,17 @@ public class FenetreBase extends JFrame{
 	
 	private JTabbedPane buildContentPane(){
 		JTabbedPane container = new JTabbedPane();
-		
+		container.addTab("Drones", getPanelDrone());
+		//container.addTab("Plans", getPanelMaps());
+		//browser.loadHTML("<html><body><h1>Hello world!</h1></body></html>");
+		return container;
+	}
+	
+	public void rafraichir(){
+		modele.fireTableDataChanged();
+	}
+	
+	private JPanel getPanelDrone(){
 		JPanel panelDrone = new JPanel();
 		panelDrone.setBackground(Color.white);
 		panelDrone.setLayout(new BoxLayout(panelDrone, BoxLayout.Y_AXIS));
@@ -81,16 +98,6 @@ public class FenetreBase extends JFrame{
 
 		panelDrone.add(label);
 		panelDrone.add(table);
-		container.addTab("Drones", panelDrone);
-		
-		JPanel panelMaps = new JPanel();
-		panelMaps.setBackground(Color.white);		
-		container.addTab("Plans",panelMaps);
-		
-		return container;
-	}
-	
-	public void rafraichir(){
-		modele.fireTableDataChanged();
+		return panelDrone;
 	}
 }

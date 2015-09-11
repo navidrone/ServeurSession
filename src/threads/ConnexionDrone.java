@@ -11,6 +11,7 @@ import javax.realtime.PriorityScheduler;
 import javax.realtime.RealtimeThread;
 import javax.realtime.RelativeTime;
 
+import main.ServeurSession;
 import bean.Drone;
 
 /**
@@ -45,7 +46,7 @@ public class ConnexionDrone extends RealtimeThread{
 		}
 		drones.add(new Drone(new Socket()));
 		drones.get(0).setId(1);
-		serveurSession.getUi().rafraichir();
+		//serveurSession.getUi().rafraichir();
 		/* priority for new thread: mininum+10 */
 		int priority = PriorityScheduler.instance().getMinPriority()+10;
 		PriorityParameters priorityParameters = new PriorityParameters(priority);
