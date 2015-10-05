@@ -15,8 +15,11 @@ import javax.realtime.PriorityScheduler;
 import javax.realtime.RealtimeThread;
 import javax.realtime.RelativeTime;
 
+import rmi.FabriqueMissionInt;
+import main.ServeurSession;
 import bean.Drone;
 import bean.MessageDrone;
+import bean.Releve;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -34,13 +37,12 @@ public class GestionConnexionDrone extends RealtimeThread{
 	}
 	 */
 	
-	
-	
 	private Drone drone;
 	private OutputStream os;
 	private InputStream is;
 	private ConnexionDrone connexionDrone;
 	private Gson gson;
+	private FabriqueMissionInt fabriqueMissionInt;
 
 	public GestionConnexionDrone(PriorityParameters priorityParameters,PeriodicParameters periodicParameters, 
 			Drone drone, ConnexionDrone connexionDrone){
@@ -51,7 +53,12 @@ public class GestionConnexionDrone extends RealtimeThread{
 	}
 	
 	public void run(){
+		//Processus temps réel + priorité
 		try {
+			ServeurSession serveurSession = new ServeurSession();
+			synchronized (serveurSession) {
+				fabriqueMissionInt = serveurSession.getFabriqueMission();
+			}
 			/* priority for new thread: mininum+10 */
 			int priority = PriorityScheduler.instance().getMinPriority()+10;
 			PriorityParameters priorityParameters = new PriorityParameters(priority);
@@ -67,6 +74,9 @@ public class GestionConnexionDrone extends RealtimeThread{
             MessageDrone message = gson.fromJson(messageDrone, MessageDrone.class);
             //Enregistrement du client
             drone.setId(message.getValeur());
+            //Récupération de la mission
+            drone.setMission(fabriqueMissionInt.getMission(message.getValeur()));
+            envoyerMissionAuDrone();
             while (true) {
                 if (is.available() != 0) {
                     BufferedReader input = new BufferedReader(new InputStreamReader(is));
@@ -80,12 +90,26 @@ public class GestionConnexionDrone extends RealtimeThread{
 		}
 	}
 	
+	private void envoyerMissionAuDrone() {
+		Releve
+		
+	}
+
 	public void envoyerCommande(MessageDrone messageDrone){
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os));
 	    try {
 			writer.write(gson.toJson(messageDrone));
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private void traiterMessageDrone(MessageDrone message){
+		if(message.getType() == MessageDrone.RELEVE){
+			System.out.println("on enregistre le relevé");
+			drone.getMission().getReleve().add(gson.fromJson(message.getReleve(), Releve.class));
+		}else if(message.getType() == MessageDrone.COMMANDE){
+			System.out.println("on enregistre le relevé");
 		}
 	}
 }

@@ -46,7 +46,7 @@ public class ConnexionDrone extends RealtimeThread{
 		}
 		drones.add(new Drone(new Socket()));
 		drones.get(0).setId(1);
-		//serveurSession.getUi().rafraichir();
+		serveurSession.getUi().addDroneUI(drones.get(0));
 		/* priority for new thread: mininum+10 */
 		int priority = PriorityScheduler.instance().getMinPriority()+10;
 		PriorityParameters priorityParameters = new PriorityParameters(priority);

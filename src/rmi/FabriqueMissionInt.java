@@ -7,7 +7,7 @@ public interface FabriqueMissionInt extends Remote {
 	
 	/**
 	 * 
-	 * remonte la mission "id" depuis la base de données
+	 * remonte la mission "id" depuis la base de donnï¿½es
 	 * 
 	 * @param id
 	 * @return
@@ -15,9 +15,11 @@ public interface FabriqueMissionInt extends Remote {
 	 */
 	MissionInt getMission(int id) throws RemoteException;
 	
+	MissionInt getMissionDrone(int idDrone) throws RemoteException;
+	
 	/**
 	 * 
-	 * Sauvegarde/met à jour la mission "id" 
+	 * Sauvegarde/met ï¿½ jour la mission "id" 
 	 * 
 	 * @param mission
 	 * @throws RemoteException
@@ -27,7 +29,7 @@ public interface FabriqueMissionInt extends Remote {
 	
 	/**
 	 * 
-	 * Supprime la mission "id" du modèle
+	 * Supprime la mission "id" du modï¿½le
 	 * 
 	 * @param id
 	 * @throws RemoteException
@@ -37,10 +39,10 @@ public interface FabriqueMissionInt extends Remote {
 	
 	/**
 	 * 
-	 * Déclenche le calcul des relevés vierges par le serveur de calcul
-	 * Ceux-ci sont sauvegardés en base automatiquement. 
+	 * Dï¿½clenche le calcul des relevï¿½s vierges par le serveur de calcul
+	 * Ceux-ci sont sauvegardï¿½s en base automatiquement. 
 	 * 
-	 * Cette fonctionnalité est bloquée si la mission a déjà des relevés
+	 * Cette fonctionnalitï¿½ est bloquï¿½e si la mission a dï¿½jï¿½ des relevï¿½s
 	 * 
 	 * @param mission
 	 * @throws RemoteException

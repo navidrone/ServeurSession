@@ -4,6 +4,8 @@
 package bean;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.Date;
 
 import rmi.CoordGpsInt;
@@ -15,13 +17,14 @@ import rmi.ReleveInt;
  */
 
 
-public class Releve implements Serializable, ReleveInt {
+public class Releve extends UnicastRemoteObject implements Serializable, ReleveInt {
+
+	protected Releve() throws RemoteException {
+		super();
+	}
 
 	private static final long serialVersionUID = 1L;	
 
-	private RelevePK relevePk;
-	
-	private CoordGps coordGps;
 
 	private Double profondeur;
 
@@ -44,25 +47,52 @@ public class Releve implements Serializable, ReleveInt {
 		this.dateReleve = dateReleve;
 	}
 
-	public RelevePK getRelevePk() {
-		return relevePk;
+	@Override
+	public CoordGpsInt getCoordGps() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public void setRelevePk(RelevePK relevePk) {
-		this.relevePk = relevePk;
+	@Override
+	public void setCoordGps(CoordGpsInt coordGps) throws RemoteException {
+		// TODO Auto-generated method stub
+		
 	}
 
-	public CoordGps getCoordGps() {
-		return coordGps;
+	@Override
+	public Integer getId() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public void setCoordGps(CoordGpsInt coordGps) {
-		this.coordGps = (CoordGps)coordGps;
+	@Override
+	public void setId(Integer id) throws RemoteException {
+		// TODO Auto-generated method stub
+		
 	}
-	
-	
-	
-	
-	
+
+	@Override
+	public Double getLattitude() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setLattitude(Double lattitude) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Double getLongitude() throws RemoteException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setLongitude(Double longitude) throws RemoteException {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

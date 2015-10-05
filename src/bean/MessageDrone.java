@@ -14,7 +14,7 @@ public class MessageDrone {
 	
 	private int type;
 	private int valeur;
-	private Mission mission;
+	private String releve;
 	
 	
 	public int getType() {
@@ -29,10 +29,11 @@ public class MessageDrone {
 	public void setValeur(int valeur) {
 		this.valeur = valeur;
 	}
-	public Mission getMission() {
-		return mission;
+	public String getReleve() {
+		return releve;
 	}
-	public void setMission(Mission mission) {
-		this.mission = mission;
+	public void setReleve(String releve) {
+		this.releve = releve;
 	}
+	
 }

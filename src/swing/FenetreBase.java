@@ -24,19 +24,14 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import main.ServeurSession;
-
-import com.teamdev.jxbrowser.chromium.Browser;
-import com.teamdev.jxbrowser.chromium.BrowserContext;
-import com.teamdev.jxbrowser.chromium.swing.BrowserView;
-
 import bean.Drone;
 import threads.ConnexionDrone;
 
 public class FenetreBase extends JFrame{
+	public static final int MAX_DRONES = 100;
 	private JTable table;
-	private TabDrones modele;
+	private DefaultTableModel modele;
 	private ServeurSession serveurSession;
-	private Browser browser;
 	
 	public FenetreBase(){
 		super();
@@ -56,13 +51,13 @@ public class FenetreBase extends JFrame{
 	private JTabbedPane buildContentPane(){
 		JTabbedPane container = new JTabbedPane();
 		container.addTab("Drones", getPanelDrone());
-		//container.addTab("Plans", getPanelMaps());
-		//browser.loadHTML("<html><body><h1>Hello world!</h1></body></html>");
 		return container;
 	}
 	
-	public void rafraichir(){
-		modele.fireTableDataChanged();
+	public void addDroneUI(Drone drone){
+		modele.addRow(new Object[]{
+			drone.getId(), "Charger Mission", "Contrôle"
+		});;
 	}
 	
 	private JPanel getPanelDrone(){
@@ -71,27 +66,21 @@ public class FenetreBase extends JFrame{
 		panelDrone.setLayout(new BoxLayout(panelDrone, BoxLayout.Y_AXIS));
 		JLabel label = new JLabel("Drônes disponibles");
 		//TabDrones modele = new TabDrones(drones);
-		modele = new TabDrones(serveurSession.getConnexionDrone().getDrones());
-		/*String[] entetes = { "Id", "Mission", "Position", "Contrôle"};
-		Object[][] data = {
-				{1, "charger mission", "Afficher", "contrôler"},
-				{2, "charger mission", "Afficher", "contrôler"}
-		};*/
-		//DefaultTableModel modele = new DefaultTableModel(data, entetes);
+		//modele = new TabDrones(serveurSession.getConnexionDrone().getDrones());
+		String[] entetes = { "Id", "Mission", "Contrôle"};
+		modele = new DefaultTableModel(null, entetes);
 		table = new JTable(modele);
-		Action delete = new AbstractAction()
+		Action chargerMission = new AbstractAction()
 		{
 		    public void actionPerformed(ActionEvent e)
 		    {
-				System.out.println("Coucou");
-				//JOptionPane.showMessageDialog(null, "alert", "alert", JOptionPane.ERROR_MESSAGE);
-		        /*JTable table = (JTable)e.getSource();
+		        JTable table = (JTable)e.getSource();
 		        int modelRow = Integer.valueOf( e.getActionCommand() );
-		        ((DefaultTableModel)table.getModel()).removeRow(modelRow);*/
+		        System.out.println("Id drone :" + ((DefaultTableModel)table.getModel()).getValueAt(modelRow, 0));
 		    }
 		};
-		 
-		ButtonColumn btnMission = new ButtonColumn(table, delete, 1);
+		
+		ButtonColumn btnMission = new ButtonColumn(table, chargerMission, 1);
 		btnMission.setMnemonic(KeyEvent.VK_D);
 		/*ButtonColumn boutonPos = new ButtonColumn(table, delete, 2);
 		ButtonColumn btnCtrl = new ButtonColumn(table, delete, 3);*/
@@ -99,5 +88,17 @@ public class FenetreBase extends JFrame{
 		panelDrone.add(label);
 		panelDrone.add(table);
 		return panelDrone;
+	}
+	
+	public Object[][] getTableModel(List<Drone> drones){
+		String[][] data = new String[drones.size()][4];
+		System.out.println("Drones size = " + drones.size());
+		System.out.println("Data size = " + data.length);
+		for(int i= 0; i<drones.size(); i++){
+			data[i][0] = drones.get(i).getId().toString();
+			data[i][1] = "Charger mission";
+			data[i][2] = "contrôler";
+		}
+		return data;
 	}
 }
