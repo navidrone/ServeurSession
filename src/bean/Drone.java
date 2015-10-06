@@ -23,7 +23,7 @@ public class Drone implements Serializable, DroneInt {
 	private String name;
 	private Double lattitude;
 	private Double longitude;
-	private MissionInt mission;
+	private Mission mission;
 	private GestionConnexionDrone gestionConnexionDrone;
 
 	
@@ -71,11 +71,11 @@ public class Drone implements Serializable, DroneInt {
 		this.longitude = longitude;
 	}
 
-	public MissionInt getMission() {
+	public Mission getMission() {
 		return mission;
 	}
 
-	public void setMission(MissionInt mission) {
+	public void setMission(Mission mission) {
 		this.mission = mission;
 	}
 

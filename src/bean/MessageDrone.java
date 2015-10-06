@@ -7,6 +7,8 @@ public class MessageDrone {
 	public static int STOP = 2;
 	public static int MISSION = 3;
 	public static int RELEVE = 4;
+	public static int PILOTE_MANUEL = 5;
+	public static int TERMINE = 6;
 	public static int CMD_HAUT = 0;
 	public static int CMD_BAS = 1;
 	public static int CMD_DROITE = 2;

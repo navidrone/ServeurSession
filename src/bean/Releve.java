@@ -19,7 +19,7 @@ import rmi.ReleveInt;
 
 public class Releve extends UnicastRemoteObject implements Serializable, ReleveInt {
 
-	protected Releve() throws RemoteException {
+	public Releve() throws RemoteException {
 		super();
 	}
 

@@ -7,6 +7,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import javax.realtime.PeriodicParameters;
@@ -16,9 +19,11 @@ import javax.realtime.RealtimeThread;
 import javax.realtime.RelativeTime;
 
 import rmi.FabriqueMissionInt;
+import rmi.ReleveInt;
 import main.ServeurSession;
 import bean.Drone;
 import bean.MessageDrone;
+import bean.Mission;
 import bean.Releve;
 
 import com.google.gson.Gson;
@@ -36,7 +41,17 @@ public class GestionConnexionDrone extends RealtimeThread{
 		fini
 	}
 	 */
-	
+	/*
+	 * type de message Mission (Serveur --> Drone) 
+	 * "CODE_MISSION!coord_dep_lat:coord_dep_lon!releve_i_id:releve_i_lat:releve_i_lon;...;...;...!coord_ar_lat:coord_ar_lon\n"
+	 * 
+	 * type de message Commande (Serveur --> Drone)
+	 * "CODE_COMMANDE!CODE_VALEUR_COMMANDE"
+	 * 
+	 * type de message Releve (Drone --> Serveur) 
+	 * "CODE_RELEVE!releve_id:releve_date:releve_profondeur\n"
+	 * 
+	 */
 	private Drone drone;
 	private OutputStream os;
 	private InputStream is;
@@ -75,13 +90,12 @@ public class GestionConnexionDrone extends RealtimeThread{
             //Enregistrement du client
             drone.setId(message.getValeur());
             //Récupération de la mission
-            drone.setMission(fabriqueMissionInt.getMission(message.getValeur()));
+            drone.setMission(new Mission(fabriqueMissionInt.getMission(message.getValeur())));
             envoyerMissionAuDrone();
             while (true) {
                 if (is.available() != 0) {
                     BufferedReader input = new BufferedReader(new InputStreamReader(is));
-                    message = gson.fromJson(input.readLine(), MessageDrone.class);
-                    drone.traiterMessage(message);
+                    traiterMessageDrone(input.readLine());
                 }
             }
 		} catch (IOException e) {
@@ -90,26 +104,72 @@ public class GestionConnexionDrone extends RealtimeThread{
 		}
 	}
 	
-	private void envoyerMissionAuDrone() {
-		Releve
-		
+	public void envoyerMissionAuDrone() throws RemoteException { 
+		StringBuffer message = new StringBuffer();
+		message.append(MessageDrone.MISSION + "!");
+		message.append(drone.getMission().getCoord_dep().getLattitude() + ":");
+		message.append(drone.getMission().getCoord_dep().getLongitude() + "!");
+		for(ReleveInt releve : drone.getMission().getReleve()){
+			message.append(releve.getId() + ":");
+			message.append(releve.getLattitude() + ":");
+			message.append(releve.getLongitude() + ";");
+		}
+		message.append("!" + drone.getMission().getCoord_ar().getLattitude() + ":");
+		message.append(drone.getMission().getCoord_ar().getLongitude());
+		envoyerMessage(message.toString());
 	}
 
-	public void envoyerCommande(MessageDrone messageDrone){
+	public void envoyerCommande(int valeurCommande){
+    	StringBuffer message = new StringBuffer();
+    	message.append(MessageDrone.COMMANDE + "!");
+    	message.append(valeurCommande);
+    	envoyerMessage(message.toString());
+	}
+	
+	public void envoyerMessage(String message){
 		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os));
 	    try {
-			writer.write(gson.toJson(messageDrone));
+			writer.write(message + '\n');
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private void traiterMessageDrone(MessageDrone message){
-		if(message.getType() == MessageDrone.RELEVE){
-			System.out.println("on enregistre le relevé");
-			drone.getMission().getReleve().add(gson.fromJson(message.getReleve(), Releve.class));
-		}else if(message.getType() == MessageDrone.COMMANDE){
-			System.out.println("on enregistre le relevé");
+	public void passerEnPiloteManuel(){
+		StringBuffer message = new StringBuffer();
+    	message.append(MessageDrone.PILOTE_MANUEL);
+	}
+	
+	private void traiterMessageDrone(String message){
+		String blocs[] = message.split("!");
+		if(blocs != null && blocs.length > 0){
+			int action = Integer.parseInt(blocs[0]);
+			if(action == MessageDrone.RELEVE){
+				//on récupère le releve
+				String releveStr[] = blocs[1].split(":");
+				try {
+					SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss SSS");
+					for(ReleveInt releve : drone.getMission().getReleve()){
+						//Pour le relevé correspondant
+						if(releve.getId() == Integer.parseInt(releveStr[0])){
+							//on mets à jour la date
+							releve.setDateReleve(formatter.parse(releveStr[1]));
+							//et la profondeur
+							releve.setProfondeur(Double.parseDouble(releveStr[2]));
+							//puis on sauve la mission
+							fabriqueMissionInt.saveMission(drone.getMission());
+						}
+					}
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}else if(action == MessageDrone.TERMINE){
+				System.out.println("on affiche dans l'UI que le drone a terminé");
+			}
 		}
 	}
 }
