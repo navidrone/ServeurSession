@@ -1,4 +1,5 @@
 package main;
+import java.awt.Color;
 import java.rmi.Naming;
 
 import javax.realtime.PeriodicParameters;

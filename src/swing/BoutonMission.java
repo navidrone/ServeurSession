@@ -1,11 +1,14 @@
 package swing;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JToggleButton;
 
@@ -41,6 +44,10 @@ public class BoutonMission extends JToggleButton{
 		this.fenetre = fenetre;
 		this.idDrone = idDrone;
 		addActionListener(actionListener);
+		setBackground(new Color(26, 188, 156));
+		setForeground(Color.WHITE);
+		setFocusPainted(false);
+		setBorder(BorderFactory.createLineBorder(new Color(26, 188, 156),5));
 	}
 	
 
