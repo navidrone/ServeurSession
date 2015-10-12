@@ -1,9 +1,7 @@
 package swing;
 
-import java.rmi.RemoteException;
 import java.util.List;
 
-import javax.swing.JButton;
 import javax.swing.table.AbstractTableModel;
 
 import bean.Drone;
@@ -43,12 +41,7 @@ public class TabDrones extends AbstractTableModel{
 		case 1:
 			// Mission
 			if(drones.get(rowIndex).getMission() != null){
-				try {
-					return drones.get(rowIndex).getMission().getName();
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				return drones.get(rowIndex).getMission().getName();
 			}else{
 				return "Charger mission";
 			}

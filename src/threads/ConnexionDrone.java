@@ -30,6 +30,7 @@ public class ConnexionDrone extends RealtimeThread{
 	private List<Drone> drones;
 	private boolean termine;
 	private ServeurSession serveurSession;
+	public static final int MAX_DRONES = 100;
 
 	public ConnexionDrone(PriorityParameters priorityParameters,PeriodicParameters periodicParameters){
 		super(priorityParameters,periodicParameters);
@@ -46,6 +47,7 @@ public class ConnexionDrone extends RealtimeThread{
 		}
 		drones.add(new Drone(new Socket()));
 		drones.get(0).setId(1);
+    	System.out.println("Drones.size()(ConnDrone) = " + drones.size());
 		serveurSession.getUi().addDroneUI(drones.get(0));
 		/* priority for new thread: mininum+10 */
 		int priority = PriorityScheduler.instance().getMinPriority()+10;
@@ -54,7 +56,6 @@ public class ConnexionDrone extends RealtimeThread{
 		RelativeTime period = new RelativeTime(200 /* ms */, 0 /* ns */);
 		PeriodicParameters periodicParameters = new PeriodicParameters(null,period, null,null,null,null);
 		ServerSocket server = null;
-		drones = new ArrayList<Drone>();
 		try {
 			server = new ServerSocket(5432);
 		    for (;;) {//On écoute indéfiniment la connexion de drones
@@ -68,10 +69,10 @@ public class ConnexionDrone extends RealtimeThread{
 		    	//Un fois que le drone s'est connecté, on crée un Thread propre pour le gérer
 		    	GestionConnexionDrone gestionConnexionDrone = 
 		    			new GestionConnexionDrone(priorityParameters, periodicParameters, drone, this);
-		    	drone.setGestionConnexionDrone(gestionConnexionDrone);
 		    	//enregistrement
 		    	drones.add(drone);
 		    	gestionConnexionDrone.start();
+		    	
 		    }
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

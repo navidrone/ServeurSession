@@ -1,4 +1,5 @@
 package threads;
+import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -6,11 +7,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.net.Socket;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Map;
+import java.util.Scanner;
 
 import javax.realtime.PeriodicParameters;
 import javax.realtime.PriorityParameters;
@@ -24,7 +24,6 @@ import main.ServeurSession;
 import bean.Drone;
 import bean.MessageDrone;
 import bean.Mission;
-import bean.Releve;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -64,6 +63,7 @@ public class GestionConnexionDrone extends RealtimeThread{
 		super(priorityParameters,periodicParameters);
 		this.drone=drone;
 		this.connexionDrone=connexionDrone;
+		this.drone.setGestionConnexionDrone(this);
 		gson = new GsonBuilder().create();
 	}
 	
@@ -92,6 +92,7 @@ public class GestionConnexionDrone extends RealtimeThread{
             //Récupération de la mission
             drone.setMission(new Mission(fabriqueMissionInt.getMission(message.getValeur())));
             envoyerMissionAuDrone();
+            serveurSession.getUi().addDroneUI(drone);
             while (true) {
                 if (is.available() != 0) {
                     BufferedReader input = new BufferedReader(new InputStreamReader(is));
@@ -158,6 +159,7 @@ public class GestionConnexionDrone extends RealtimeThread{
 							releve.setProfondeur(Double.parseDouble(releveStr[2]));
 							//puis on sauve la mission
 							fabriqueMissionInt.saveMission(drone.getMission());
+							break;
 						}
 					}
 				} catch (RemoteException e) {
@@ -169,6 +171,40 @@ public class GestionConnexionDrone extends RealtimeThread{
 				}
 			}else if(action == MessageDrone.TERMINE){
 				System.out.println("on affiche dans l'UI que le drone a terminé");
+			}
+		}
+	}
+
+	public void demarrer() {
+    	StringBuffer message = new StringBuffer();
+    	message.append(MessageDrone.START + "!");
+    	envoyerMessage(message.toString());
+    	lireCommandes();
+	}
+
+	private void lireCommandes() {
+		Scanner keyboard = new Scanner(System.in);
+		int keyTyped;
+		while((keyTyped = keyboard.nextInt()) != KeyEvent.VK_SPACE){
+			switch (keyTyped) {
+			case KeyEvent.VK_RIGHT:
+				envoyerCommande(MessageDrone.CMD_DROITE);
+		        System.out.println("Envoi de la commande : CMD_DROITE");
+				break;
+			case KeyEvent.VK_LEFT:
+				envoyerCommande(MessageDrone.CMD_GAUCHE);
+		        System.out.println("Envoi de la commande : CMD_GAUCHE");
+				break;
+			case KeyEvent.VK_UP:
+				envoyerCommande(MessageDrone.CMD_HAUT);		        
+				System.out.println("Envoi de la commande : CMD_HAUT");
+				break;
+			case KeyEvent.VK_DOWN:
+				envoyerCommande(MessageDrone.CMD_BAS);
+				System.out.println("Envoi de la commande : CMD_BAS");
+				break;
+			default:
+				break;
 			}
 		}
 	}

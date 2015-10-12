@@ -1,42 +1,32 @@
 package swing;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.GridLayout;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
 
 import main.ServeurSession;
 import bean.Drone;
-import threads.ConnexionDrone;
 
 public class FenetreBase extends JFrame{
-	public static final int MAX_DRONES = 100;
-	private JTable table;
-	private DefaultTableModel modele;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private static final int NB_DRONES = 10;
 	private ServeurSession serveurSession;
+	private boolean isCommandeActive;
+	private int idDroneActif;
+	private JPanel[][] panelHolder;
+	private int[] corresDronePanel = new int[NB_DRONES];
+
 	
 	public FenetreBase(){
 		super();
 		this.serveurSession = new ServeurSession();
 		build();//On initialise notre fenêtre
+		isCommandeActive = false;
 	}
  
 	private void build(){
@@ -45,60 +35,72 @@ public class FenetreBase extends JFrame{
 		setLocationRelativeTo(null); //On centre la fenêtre sur l'écran
 		setResizable(false); //On interdit la redimensionnement de la fenêtre
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //On dit à l'application de se fermer lors du clic sur la croix
-		setContentPane(buildContentPane());
-	}
-	
-	private JTabbedPane buildContentPane(){
-		JTabbedPane container = new JTabbedPane();
-		container.addTab("Drones", getPanelDrone());
-		return container;
+		panelHolder = new JPanel[NB_DRONES][3];   
+		setLayout(new GridLayout(NB_DRONES,3));
+		String[] entetes = { "Id", "Mission", "Contrôle"};
+		//Ajout des panels
+		for(int m = 0; m < NB_DRONES; m++) {
+			for(int n = 0; n < 3; n++) {
+				panelHolder[m][n] = new JPanel();
+				if(m == 0){
+					panelHolder[m][n].add(new JLabel(entetes[n]));
+				}
+				add(panelHolder[m][n]);
+			}
+		}
 	}
 	
 	public void addDroneUI(Drone drone){
-		modele.addRow(new Object[]{
-			drone.getId(), "Charger Mission", "Contrôle"
-		});;
-	}
-	
-	private JPanel getPanelDrone(){
-		JPanel panelDrone = new JPanel();
-		panelDrone.setBackground(Color.white);
-		panelDrone.setLayout(new BoxLayout(panelDrone, BoxLayout.Y_AXIS));
-		JLabel label = new JLabel("Drônes disponibles");
-		//TabDrones modele = new TabDrones(drones);
-		//modele = new TabDrones(serveurSession.getConnexionDrone().getDrones());
-		String[] entetes = { "Id", "Mission", "Contrôle"};
-		modele = new DefaultTableModel(null, entetes);
-		table = new JTable(modele);
-		Action chargerMission = new AbstractAction()
-		{
-		    public void actionPerformed(ActionEvent e)
-		    {
-		        JTable table = (JTable)e.getSource();
-		        int modelRow = Integer.valueOf( e.getActionCommand() );
-		        System.out.println("Id drone :" + ((DefaultTableModel)table.getModel()).getValueAt(modelRow, 0));
-		    }
-		};
-		
-		ButtonColumn btnMission = new ButtonColumn(table, chargerMission, 1);
-		btnMission.setMnemonic(KeyEvent.VK_D);
-		/*ButtonColumn boutonPos = new ButtonColumn(table, delete, 2);
-		ButtonColumn btnCtrl = new ButtonColumn(table, delete, 3);*/
-
-		panelDrone.add(label);
-		panelDrone.add(table);
-		return panelDrone;
-	}
-	
-	public Object[][] getTableModel(List<Drone> drones){
-		String[][] data = new String[drones.size()][4];
-		System.out.println("Drones size = " + drones.size());
-		System.out.println("Data size = " + data.length);
-		for(int i= 0; i<drones.size(); i++){
-			data[i][0] = drones.get(i).getId().toString();
-			data[i][1] = "Charger mission";
-			data[i][2] = "contrôler";
+		System.out.println("Ajout drone");
+		BoutonMission boutonMission = new BoutonMission(drone.getId(), this);
+		BoutonControle boutonControle = new BoutonControle(drone.getId(), this);
+		boutonControle.addKeyListener(new MyKeyListener(this));
+		boutonMission.setText("Lancer Mission");
+		boutonControle.setText("Prendre le contrôle");
+		for(int i = 1; i<corresDronePanel.length; i++){
+			//ligne libre
+			if(corresDronePanel[i] == 0){
+				System.out.println("i = " + i);
+				panelHolder[i][0].add(new JLabel(drone.getId() + ""));
+				panelHolder[i][0].revalidate();
+				panelHolder[i][1].add(boutonMission);	
+				panelHolder[i][1].revalidate();
+				panelHolder[i][2].add(boutonControle);
+				panelHolder[i][2].revalidate();
+				corresDronePanel[i] = drone.getId();
+				break;
+			}
 		}
-		return data;
 	}
+
+	public void envoyerCommande(int valeur) {
+        System.out.println("Envoi de la commande au Thread: " + valeur);
+		//envoiCommande
+	}
+
+	public boolean isCommandeActive() {
+		return isCommandeActive;
+	}
+
+	public void setCommandeActive(boolean isCommandeActive) {
+		this.isCommandeActive = isCommandeActive;
+	}
+
+	public ServeurSession getServeurSession() {
+		return serveurSession;
+	}
+
+	public void setServeurSession(ServeurSession serveurSession) {
+		this.serveurSession = serveurSession;
+	}
+
+	public int getIdDroneActif() {
+		return idDroneActif;
+	}
+
+	public void setIdDroneActif(int inDroneActif) {
+		this.idDroneActif = inDroneActif;
+	}	
+	
+	
 }
