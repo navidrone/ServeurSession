@@ -16,6 +16,7 @@ public class MyKeyListener implements KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		//Si l'envoi de commandes est activé
 		if(fenetreBase.isCommandeActive()){
 			switch (e.getKeyCode()) {
 				case KeyEvent.VK_RIGHT:

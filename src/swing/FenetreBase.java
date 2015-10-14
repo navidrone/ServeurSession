@@ -1,14 +1,11 @@
 package swing;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.GridLayout;
 
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
 
 import main.ServeurSession;
 import bean.Drone;
@@ -43,22 +40,26 @@ public class FenetreBase extends JFrame{
 		setLayout(new GridLayout(NB_DRONES,3));
 		String[] entetes = { "Id Drône", "Mission", "Contrôle"};
 		//Ajout des panels
+		Color bkgColor = null;
 		for(int m = 0; m < NB_DRONES; m++) {
 			for(int n = 0; n < 3; n++) {
 				panelHolder[m][n] = new JPanel();
-				panelHolder[m][n].setOpaque(true);
-				panelHolder[m][n].setAlignmentY(JPanel.CENTER_ALIGNMENT);
-				if(m == 0){
+				//On détermine la couleur de la ligne en fonction
+				//du numéro de colonne
+				if(m == 0){//En-tête
 					JLabel entete = new JLabel(entetes[n]);
 					entete.setForeground(Color.WHITE);
 					panelHolder[m][n].add(entete);
-					panelHolder[m][n].setBackground( new Color(93, 93, 93) );
+					bkgColor = new Color(93, 93, 93);
+				}else if(m % 2 == 0){ // pair
+					bkgColor = new Color(219, 219, 219);
+				}else{//impair
+					bkgColor = new Color(237, 237, 237);
 				}
-				if(m % 2 == 0 && m > 0){
-					panelHolder[m][n].setBackground( new Color(219, 219, 219) );
-				}else if(m > 0){
-					panelHolder[m][n].setBackground( new Color(237, 237, 237) );
-				}
+				//Ajout du panel au GridLayout
+				panelHolder[m][n].setOpaque(true);
+				panelHolder[m][n].setAlignmentY(JPanel.CENTER_ALIGNMENT);
+				panelHolder[m][n].setBackground(bkgColor);
 				add(panelHolder[m][n]);
 			}
 		}
@@ -72,9 +73,8 @@ public class FenetreBase extends JFrame{
 		boutonMission.setText("Lancer Mission");
 		boutonControle.setText("Prendre le contrôle");
 		for(int i = 1; i<corresDronePanel.length; i++){
-			//ligne libre
+			//ligne libre on insère le drone
 			if(corresDronePanel[i] == 0){
-				System.out.println("i = " + i);
 				panelHolder[i][0].add(new JLabel(drone.getId() + ""));
 				panelHolder[i][0].revalidate();
 				panelHolder[i][1].add(boutonMission);	
@@ -88,8 +88,12 @@ public class FenetreBase extends JFrame{
 	}
 
 	public void envoyerCommande(int valeur) {
-        System.out.println("Envoi de la commande au Thread: " + valeur);
-		//envoiCommande
+        System.out.println("Envoi de la commande au GestionConnexion: " + valeur);
+        /*for(Drone drone : serveurSession.getConnexionDrone().getDrones()){
+        	if(drone.getId() == idDroneActif){
+        		drone.getGestionConnexionDrone().envoyerCommande(valeur);
+        	}
+        }*/
 	}
 
 	public boolean isCommandeActive() {
@@ -114,7 +118,5 @@ public class FenetreBase extends JFrame{
 
 	public void setIdDroneActif(int inDroneActif) {
 		this.idDroneActif = inDroneActif;
-	}	
-	
-	
+	}
 }

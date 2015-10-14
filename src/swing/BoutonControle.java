@@ -14,47 +14,28 @@ import javax.swing.JToggleButton;
 import bean.Drone;
 
 public class BoutonControle extends JToggleButton{
-	private FenetreBase fenetre;
-	private int idDrone;
-	
-	private Action controler = new AbstractAction()
-	{
-		private static final long serialVersionUID = -5669139537076132674L;
 
-		public void actionPerformed(ActionEvent e)
-	    {
-	        System.out.println("Id drone :" + idDrone);
-	        //Récupération du drone
-	        for(Drone drone : fenetre.getServeurSession().getConnexionDrone().getDrones()){
-	        	if(drone.getId().equals(idDrone)){
-	        		//drone.getGestionConnexionDrone().demarrer();
-			        System.out.println("Envoi de la commande Controle!" + "Id drone :" + idDrone);
-			        fenetre.setIdDroneActif(idDrone);
-			        fenetre.setCommandeActive(true);
-	        		break;
-	        	}
-	        }
-	    }
-	};
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private FenetreBase fenetre;
+	private Drone drone;
+	
    private ActionListener actionListener = new ActionListener() {
 	      public void actionPerformed(ActionEvent actionEvent) {
 	        AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
 	        boolean selected = abstractButton.getModel().isSelected();
+	        //Passage en mode manuel
 	        if(selected){
-		        System.out.println("Id drone :" + idDrone);
 		        setText("Rerendre le mission");
-		        //Récupération du drone
-		        for(Drone drone : fenetre.getServeurSession().getConnexionDrone().getDrones()){
-		        	if(drone.getId().equals(idDrone)){
-		        		//drone.getGestionConnexionDrone().demarrer();
-				        System.out.println("Envoi de la commande Controle!" + "Id drone :" + idDrone);
-				        fenetre.setIdDroneActif(idDrone);
-				        fenetre.setCommandeActive(true);
-		        		break;
-		        	}
-		        }
-	      }else{
+        		//drone.getGestionConnexionDrone().passerEnPiloteManuel();
+		        System.out.println("Envoi de la commande Controle!" + "Id drone :" + drone.getId());
+		        fenetre.setIdDroneActif(drone.getId());
+		        fenetre.setCommandeActive(true);
+	      }else{//On redemarre la mission
 	    	  fenetre.setCommandeActive(false);
+	    	  //drone.getGestionConnexionDrone().demarrer();
 	    	  setText("Prendre le contrôle");
 	      }
 	      }
@@ -62,13 +43,19 @@ public class BoutonControle extends JToggleButton{
 	public BoutonControle(int idDrone, FenetreBase fenetre) {
 		super();
 		this.fenetre = fenetre;
-		this.idDrone = idDrone;
+		//Récupération du drone
+        for(Drone drone : fenetre.getServeurSession().getConnexionDrone().getDrones()){
+        	if(drone.getId().equals(idDrone)){
+        		this.drone = drone;
+        		System.out.println("BoutonControle Drone trouvé!Id drone :" + drone.getId());
+        		break;
+        	}
+        }
 		setBackground(new Color(26, 188, 156));
 		setForeground(Color.WHITE);
 		setFocusPainted(false);
 		setBorder(BorderFactory.createLineBorder(new Color(26, 188, 156),5));
 		addActionListener(actionListener);
-		//setAction(controler);
 	}
 	
 

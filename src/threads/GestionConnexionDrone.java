@@ -70,27 +70,21 @@ public class GestionConnexionDrone extends RealtimeThread{
 	public void run(){
 		//Processus temps réel + priorité
 		try {
+			System.out.println("Connexion d'un nouveau Drone");
 			ServeurSession serveurSession = new ServeurSession();
 			synchronized (serveurSession) {
-				fabriqueMissionInt = serveurSession.getFabriqueMission();
+				//fabriqueMissionInt = serveurSession.getFabriqueMission();
 			}
-			/* priority for new thread: mininum+10 */
-			int priority = PriorityScheduler.instance().getMinPriority()+10;
-			PriorityParameters priorityParameters = new PriorityParameters(priority);
-			/* period: 200ms */
-			RelativeTime period = new RelativeTime(200 /* ms */, 0 /* ns */);
-			PeriodicParameters periodicParameters = new PeriodicParameters(null,period, null,null,null,null);
 			InputStream is = drone.getSocket().getInputStream();
 			os = drone.getSocket().getOutputStream();
 			is = drone.getSocket().getInputStream();
 			//On commence par lire le message d'identification du drone
 			BufferedReader br = new BufferedReader(new InputStreamReader(is));
 			String messageDrone = br.readLine();
-            MessageDrone message = gson.fromJson(messageDrone, MessageDrone.class);
             //Enregistrement du client
-            drone.setId(message.getValeur());
+            drone.setId(Integer.parseInt(messageDrone));
             //Récupération de la mission
-            drone.setMission(new Mission(fabriqueMissionInt.getMission(message.getValeur())));
+            drone.setMission(new Mission(fabriqueMissionInt.getMission(drone.getId())));
             envoyerMissionAuDrone();
             serveurSession.getUi().addDroneUI(drone);
             while (true) {
@@ -149,7 +143,7 @@ public class GestionConnexionDrone extends RealtimeThread{
 				//on récupère le releve
 				String releveStr[] = blocs[1].split(":");
 				try {
-					SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss SSS");
+					SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss SSS");
 					for(ReleveInt releve : drone.getMission().getReleve()){
 						//Pour le relevé correspondant
 						if(releve.getId() == Integer.parseInt(releveStr[0])){
@@ -179,33 +173,5 @@ public class GestionConnexionDrone extends RealtimeThread{
     	StringBuffer message = new StringBuffer();
     	message.append(MessageDrone.START + "!");
     	envoyerMessage(message.toString());
-    	lireCommandes();
-	}
-
-	private void lireCommandes() {
-		Scanner keyboard = new Scanner(System.in);
-		int keyTyped;
-		while((keyTyped = keyboard.nextInt()) != KeyEvent.VK_SPACE){
-			switch (keyTyped) {
-			case KeyEvent.VK_RIGHT:
-				envoyerCommande(MessageDrone.CMD_DROITE);
-		        System.out.println("Envoi de la commande : CMD_DROITE");
-				break;
-			case KeyEvent.VK_LEFT:
-				envoyerCommande(MessageDrone.CMD_GAUCHE);
-		        System.out.println("Envoi de la commande : CMD_GAUCHE");
-				break;
-			case KeyEvent.VK_UP:
-				envoyerCommande(MessageDrone.CMD_HAUT);		        
-				System.out.println("Envoi de la commande : CMD_HAUT");
-				break;
-			case KeyEvent.VK_DOWN:
-				envoyerCommande(MessageDrone.CMD_BAS);
-				System.out.println("Envoi de la commande : CMD_BAS");
-				break;
-			default:
-				break;
-			}
-		}
 	}
 }

@@ -1,5 +1,4 @@
 package main;
-import java.awt.Color;
 import java.rmi.Naming;
 
 import javax.realtime.PeriodicParameters;
@@ -8,7 +7,6 @@ import javax.realtime.PriorityScheduler;
 import javax.realtime.RelativeTime;
 
 import rmi.FabriqueMissionInt;
-import swing.FenetreBase;
 import swing.FenetreBase;
 import threads.ConnexionDrone;
 
