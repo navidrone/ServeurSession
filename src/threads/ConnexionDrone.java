@@ -12,7 +12,6 @@ import javax.realtime.PriorityScheduler;
 import javax.realtime.RealtimeThread;
 import javax.realtime.RelativeTime;
 
-import rmi.CoordGpsInt;
 import rmi.FabriqueMissionInt;
 import rmi.ReleveInt;
 import main.ServeurSession;
@@ -64,9 +63,8 @@ public class ConnexionDrone extends RealtimeThread{
 			System.out.println("densite : " + monDrone.getMission().getDensite());
 			System.out.println("période : " + monDrone.getMission().getPeriode());
 			for(ReleveInt r:monDrone.getMission().getReleve()){
-				CoordGpsInt c = r.getCoordGps();
 				r.setProfondeur(12.0);
-				System.out.println("Releve : "+c.getLattitude()+" "+c.getLongitude());
+				System.out.println("Releve : "+r.getLattitude()+" "+r.getLongitude());
 			}
 			fabriqueMissionInt.saveMission(monDrone.getMission());
 		} catch (RemoteException e1) {

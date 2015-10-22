@@ -62,40 +62,33 @@ public class Releve extends UnicastRemoteObject implements Serializable, ReleveI
 	}
 	@Override
 	public Integer getId() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.coordGps.getId();
 	}
 
 	@Override
 	public void setId(Integer id) throws RemoteException {
-		// TODO Auto-generated method stub
-		
+		this.coordGps.setId(id);
 	}
 
 	@Override
 	public Double getLattitude() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		return this.coordGps.getLattitude();
 	}
 
 	@Override
 	public void setLattitude(Double lattitude) throws RemoteException {
-		// TODO Auto-generated method stub
-		
+		this.coordGps.setLattitude(lattitude);
 	}
 
 	@Override
 	public Double getLongitude() throws RemoteException {
 		// TODO Auto-generated method stub
-		return null;
+		return this.coordGps.getLongitude();
 	}
 
 	@Override
 	public void setLongitude(Double longitude) throws RemoteException {
-		// TODO Auto-generated method stub
-		
+		this.coordGps.setLongitude(longitude);
 	}
-	
-	
 	
 }
