@@ -9,7 +9,6 @@ import java.util.List;
 import rmi.DroneInt;
 import rmi.MissionInt;
 import rmi.ReleveInt;
-
 import rmi.CoordGpsInt;
 
 public class Mission extends UnicastRemoteObject implements Serializable,MissionInt{
@@ -37,6 +36,8 @@ public class Mission extends UnicastRemoteObject implements Serializable,Mission
 	
 	public Mission(MissionInt missionInt) throws RemoteException {
 		super();
+		System.out.println("ID = " + missionInt.getId());
+		System.out.println("NAME = " + missionInt.getName());
 		this.id = missionInt.getId();
 		this.name = missionInt.getName() ;
 		this.type = missionInt.getType() ;
@@ -52,9 +53,7 @@ public class Mission extends UnicastRemoteObject implements Serializable,Mission
 		if(missionInt.getReleve() != null){
 			
 			for(ReleveInt releveInt:missionInt.getReleve()){
-				Releve r = new Releve();
-				r.setLattitude(releveInt.getLattitude());
-				r.setLongitude(releveInt.getLongitude());
+				Releve r = new Releve(releveInt.getCoordGps());				
 				releveList.add(r);
 			}
 			

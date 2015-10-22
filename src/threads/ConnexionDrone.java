@@ -2,6 +2,7 @@ package threads;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,8 +12,12 @@ import javax.realtime.PriorityScheduler;
 import javax.realtime.RealtimeThread;
 import javax.realtime.RelativeTime;
 
+import rmi.CoordGpsInt;
+import rmi.FabriqueMissionInt;
+import rmi.ReleveInt;
 import main.ServeurSession;
 import bean.Drone;
+import bean.Mission;
 
 /**
  * 
@@ -31,6 +36,7 @@ public class ConnexionDrone extends RealtimeThread{
 	private boolean termine;
 	private ServeurSession serveurSession;
 	public static final int MAX_DRONES = 100;
+	private FabriqueMissionInt fabriqueMissionInt;
 
 	public ConnexionDrone(PriorityParameters priorityParameters,PeriodicParameters periodicParameters){
 		super(priorityParameters,periodicParameters);
@@ -45,9 +51,29 @@ public class ConnexionDrone extends RealtimeThread{
 		} catch(InterruptedException ex) {
 		    Thread.currentThread().interrupt();
 		}
-		drones.add(new Drone(new Socket()));
-		drones.get(0).setId(1);
-    	System.out.println("Drones.size()(ConnDrone) = " + drones.size());
+		Drone monDrone = new Drone(new Socket());
+		monDrone.setId(1);
+    	//System.out.println("Drones.size()(ConnDrone) = " + drones.size());
+    	System.out.println("DroneId = " + monDrone.getId());
+		synchronized (serveurSession) {
+			fabriqueMissionInt = serveurSession.getFabriqueMission();
+		}
+		try {
+			monDrone.setMission(new Mission(fabriqueMissionInt.getMission(monDrone.getId())));
+			System.out.println("DroneName : " + monDrone.getName());
+			System.out.println("densite : " + monDrone.getMission().getDensite());
+			System.out.println("période : " + monDrone.getMission().getPeriode());
+			for(ReleveInt r:monDrone.getMission().getReleve()){
+				CoordGpsInt c = r.getCoordGps();
+				r.setProfondeur(12.0);
+				System.out.println("Releve : "+c.getLattitude()+" "+c.getLongitude());
+			}
+			fabriqueMissionInt.saveMission(monDrone.getMission());
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		drones.add(monDrone);
 		serveurSession.getUi().addDroneUI(drones.get(0));
 		/* priority for new thread: mininum+10 */
 		int priority = PriorityScheduler.instance().getMinPriority()+10;

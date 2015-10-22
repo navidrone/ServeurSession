@@ -21,7 +21,7 @@ public class ServeurSession {
 		try {
 			fabriqueMission =  (FabriqueMissionInt) Naming.lookup("rmi://localhost:1099/FabriqueMission");
 		} catch (Exception e) {
-		    //e.printStackTrace();
+		    e.printStackTrace();
 		}
 		int priority = PriorityScheduler.instance().getMinPriority()+10;
 		PriorityParameters priorityParameters = new PriorityParameters(priority);

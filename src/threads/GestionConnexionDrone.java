@@ -1,5 +1,4 @@
 package threads;
-import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -10,13 +9,10 @@ import java.io.OutputStreamWriter;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Scanner;
 
 import javax.realtime.PeriodicParameters;
 import javax.realtime.PriorityParameters;
-import javax.realtime.PriorityScheduler;
 import javax.realtime.RealtimeThread;
-import javax.realtime.RelativeTime;
 
 import rmi.FabriqueMissionInt;
 import rmi.ReleveInt;
@@ -54,17 +50,13 @@ public class GestionConnexionDrone extends RealtimeThread{
 	private Drone drone;
 	private OutputStream os;
 	private InputStream is;
-	private ConnexionDrone connexionDrone;
-	private Gson gson;
 	private FabriqueMissionInt fabriqueMissionInt;
 
 	public GestionConnexionDrone(PriorityParameters priorityParameters,PeriodicParameters periodicParameters, 
 			Drone drone, ConnexionDrone connexionDrone){
 		super(priorityParameters,periodicParameters);
 		this.drone=drone;
-		this.connexionDrone=connexionDrone;
 		this.drone.setGestionConnexionDrone(this);
-		gson = new GsonBuilder().create();
 	}
 	
 	public void run(){

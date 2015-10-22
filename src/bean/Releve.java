@@ -19,10 +19,15 @@ import rmi.ReleveInt;
 
 public class Releve extends UnicastRemoteObject implements Serializable, ReleveInt {
 
+	private CoordGpsInt coordGps;
+	
 	public Releve() throws RemoteException {
 		super();
 	}
-
+	public Releve(CoordGpsInt coordGps) throws RemoteException {
+		super();
+		this.coordGps = coordGps;
+	}
 	private static final long serialVersionUID = 1L;	
 
 
@@ -47,18 +52,14 @@ public class Releve extends UnicastRemoteObject implements Serializable, ReleveI
 		this.dateReleve = dateReleve;
 	}
 
-	@Override
-	public CoordGpsInt getCoordGps() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	@Override
-	public void setCoordGps(CoordGpsInt coordGps) throws RemoteException {
-		// TODO Auto-generated method stub
-		
-	}
 
+	public CoordGpsInt getCoordGps() {
+		return coordGps;
+	}
+	public void setCoordGps(CoordGpsInt coordGps) {
+		this.coordGps = coordGps;
+	}
 	@Override
 	public Integer getId() throws RemoteException {
 		// TODO Auto-generated method stub
@@ -94,5 +95,7 @@ public class Releve extends UnicastRemoteObject implements Serializable, ReleveI
 		// TODO Auto-generated method stub
 		
 	}
+	
+	
 	
 }
