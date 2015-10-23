@@ -23,7 +23,7 @@ public class ServeurSession {
 		} catch (Exception e) {
 		    e.printStackTrace();
 		}
-		int priority = PriorityScheduler.instance().getMinPriority()+10;
+		int priority = PriorityScheduler.instance().getMinPriority()+3;
 		PriorityParameters priorityParameters = new PriorityParameters(priority);
 		RelativeTime period = new RelativeTime(200 /* ms */, 0 /* ns */);
 		PeriodicParameters periodicParameters = new PeriodicParameters(null,period, null,null,null,null);

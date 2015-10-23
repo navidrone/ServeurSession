@@ -36,8 +36,6 @@ public class Mission extends UnicastRemoteObject implements Serializable,Mission
 	
 	public Mission(MissionInt missionInt) throws RemoteException {
 		super();
-		System.out.println("ID = " + missionInt.getId());
-		System.out.println("NAME = " + missionInt.getName());
 		this.id = missionInt.getId();
 		this.name = missionInt.getName() ;
 		this.type = missionInt.getType() ;
@@ -54,12 +52,10 @@ public class Mission extends UnicastRemoteObject implements Serializable,Mission
 		ArrayList<Drone>  droneList  = new ArrayList<Drone>();
 		
 		if(missionInt.getReleve() != null){
-			
 			for(ReleveInt releveInt:missionInt.getReleve()){
 				Releve r = new Releve(releveInt.getCoordGps());				
 				releveList.add(r);
 			}
-			
 		}
 
 		this.nbDrone = droneList.size() ;
